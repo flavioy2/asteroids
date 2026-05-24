@@ -1,9 +1,0 @@
-﻿  Asteroid.cpp
-  Bullet.cpp
-  Flame.cpp
-  mainAsteroids.cpp
-  ObjectsList.cpp
-  Shape.cpp
-  Ship.cpp
-  Generando código...
-LINK : fatal error LNK1104: no se puede abrir el archivo 'glut32.lib'

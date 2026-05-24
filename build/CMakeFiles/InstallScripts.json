@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/mike/asteroids/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
