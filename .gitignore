@@ -1,0 +1,77 @@
+# Build dirs
+build/
+out/
+cmake-build-*/
+Debug/
+Release/
+x64/
+x86/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+_deps/
+CMakeUserPresets.json
+
+# Visual Studio
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+CMakeSettings.json
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains
+.idea/
+
+# Code::Blocks
+*.cbp
+*.layout
+*.depend
+
+# Object / binaries
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+*.pdb
+*.ilk
+*.exp
+
+# Compiled headers
+*.gch
+*.pch
+*.ipch
+
+# Logs / tmp
+*.log
+*.tlog
+*.recipe
+*.lastbuildstate
+*~
+*.swp
+*.swo
+
+# macOS
+.DS_Store

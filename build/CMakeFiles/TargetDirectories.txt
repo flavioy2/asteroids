@@ -1,3 +1,0 @@
-/home/mike/asteroids/build/CMakeFiles/AsteroidsGL.dir
-/home/mike/asteroids/build/CMakeFiles/edit_cache.dir
-/home/mike/asteroids/build/CMakeFiles/rebuild_cache.dir
