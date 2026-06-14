@@ -2,15 +2,11 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <stdlib.h>
-#include <cmath>
 
 #ifdef _WIN32
 #include <windows.h>
+#include "glut.h"
 #endif
-
-#include"glut.h"
-
 
 //#ifdef linux
 #ifdef __APPLE__
@@ -45,10 +41,10 @@
 #define WINY 600
 
 #define ASTEROID_SPEED 0.05
-#define OVNI_SPEED 0.05 
+#define OVNI_SPEED 0.05
 #define BULLETSPEED 0.2
 #define SHIPSPEED 0.01
-#define NUMASTEROIDS 15
+#define NUMASTEROIDS 3
 #define MAXSHOTTIME 100
 
 #define ESC 27

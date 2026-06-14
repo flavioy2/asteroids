@@ -1,36 +1,22 @@
 #include "ObjectsList.h"
-#include "commonstuff.h"
+
 ObjectsList::ObjectsList() {
     n = 0;
     head = NULL;
+
     theShippa = new Ship();
     add(theShippa);
 
-    for (int i = 0; i < 1; i++) {
-        add(new Asteroid(BIG));
-    }
-    reposition(theShippa);
-}
+    theOvni = NULL;
+    tiempoOVNI = 0;
 
-void ObjectsList::move() {
-    nodo* aux = head;
-
-    while (aux != NULL) {
-        aux->obj->move();
-        aux = aux->next;
-    }
-}    
-void ObjectsList::draw() {
-    nodo* aux = head;
-
-    while (aux != NULL) {
-        aux->obj->draw();
-        aux = aux->next;
+    for (int i = 0; i < NUMASTEROIDS; i++) {
+        add(new Asteroid(RAND_DOM(1, 3)));
     }
 }
 
 void ObjectsList::add(Shape* s) {
-    nodo* nuevo = new nodo;
+    nodo* nuevo = new nodo();
     nuevo->obj = s;
     nuevo->next = head;
     head = nuevo;
@@ -45,21 +31,38 @@ void ObjectsList::remove(Shape* s) {
 
     while (actual != NULL) {
         if (actual->obj == s) {
-
-            if (anterior == NULL) {
+            if (anterior == NULL)
                 head = actual->next;
-            }
-            else {
+            else
                 anterior->next = actual->next;
-            }
-
-            delete actual->obj;
             delete actual;
             n--;
             return;
         }
-
         anterior = actual;
+        actual = actual->next;
+    }
+}       
+
+void ObjectsList::move() {
+    tiempoOVNI++;
+    if (tiempoOVNI > 1500 && theOvni == NULL) {
+        theOvni = new OVNI(1);
+        add(theOvni);
+        tiempoOVNI = 0;
+    }
+
+    nodo* actual = head;
+    while (actual != NULL) {
+        actual->obj->move();
+        actual = actual->next;
+    }
+}
+
+void ObjectsList::draw() {
+    nodo* actual = head;
+    while (actual != NULL) {
+        actual->obj->draw();
         actual = actual->next;
     }
 }
@@ -68,71 +71,81 @@ Ship* ObjectsList::getShip() {
     return theShippa;
 }
 
-int ObjectsList::collisions(Bullet* b, Ship* s, float* expl_pos) {
-    nodo* aux = head;
-    while (aux != NULL) {
-        Asteroid* ast = dynamic_cast<Asteroid*>(aux->obj);
+void ObjectsList::reposition(Ship* ship) {
+    nodo* actual = head;
+    while (actual != NULL) {
+        Asteroid* asteroid = dynamic_cast<Asteroid*>(actual->obj);
+        if (asteroid != NULL) {
+            float apos[3];
+            asteroid->getPos(apos);
+            if (mydistance(apos[X], apos[Y], 0, 0) < 2 * asteroid->getSize())
+                asteroid->reposition();
+        }
+        actual = actual->next;
+    }
+    theShippa = ship;
+    add(theShippa);
+}
 
-        if (ast != NULL) {
-
-            // ASTEROIDE CONTRA NAVE
-            if (s != NULL) {
-                float d = (*ast) + s;
-
-                if (d < ast->getSize() + s->getSize()) {
+int ObjectsList::collisions(Bullet* bullet, Ship* ship, float* expl_pos) {
+    nodo* actual = head;
+    while (actual != NULL) {
+        Asteroid* asteroid = dynamic_cast<Asteroid*>(actual->obj);
+        if (asteroid != NULL) {
+            if (ship != NULL) {
+                float spos[3];
+                ship->getPos(spos);
+                if ((*asteroid + ship) < asteroid->getSize() + ship->getSize()) {
+                    expl_pos[X] = spos[X];
+                    expl_pos[Y] = spos[Y];
+                    remove(ship);
+                    theShippa = NULL;
                     return 1;
                 }
             }
-
-            // ASTEROIDE CONTRA BALA
-            if (b != NULL) {
-                float d = (*ast) +b;
-
-                if (d < ast->getSize() + b->getSize()) {
-                    remove(b);
-
-                    expl_pos[X] = ast->getX();
-                    expl_pos[Y] = ast->getY();
-
-                    if (ast->getAsteroidSize() == SMALL) {
-                        remove(ast);
+            if (bullet != NULL) {
+                float apos[3];
+                asteroid->getPos(apos);
+                if ((*asteroid + bullet) < asteroid->getSize() + bullet->getSize()) {
+                    expl_pos[X] = apos[X];
+                    expl_pos[Y] = apos[Y];
+                    remove(bullet);
+                    if (asteroid->getSize() == SMALL * 0.3f) {
+                        remove(asteroid);
                         return 4;
                     }
                     else {
-                        Asteroid* nuevo = ast->split();
+                        Asteroid* nuevo = asteroid->split();
                         add(nuevo);
-
-                        if (ast->getAsteroidSize() == MEDIUM) {
-                            return 3;
-                        }
-                        else {
-                            return 2;
-                        }
+                        if (asteroid->getSize() == MEDIUM * 0.3f) return 2;
+                        else return 3;
                     }
                 }
             }
         }
-
-        aux = aux->next;
+        OVNI* ovni = dynamic_cast<OVNI*>(actual->obj);
+        if (ovni != NULL && bullet != NULL) {
+            if ((*ovni + bullet) < ovni->getSize() + bullet->getSize()) {
+                remove(bullet);
+                remove(ovni);
+                theOvni = NULL;
+                tiempoOVNI = 0;   // <-- aqui
+                if (ovni->getSize() == BIG * 0.3) return 7;
+                if (ovni->getSize() == MEDIUM * 0.3) return 6;
+                return 5;
+            }
+        }
+        actual = actual->next;
     }
-
     return 0;
 }
 
-void ObjectsList::reposition(Ship* s) {
-    nodo* aux = head;
-
-    while (aux != NULL) {
-        Asteroid* ast = dynamic_cast<Asteroid*>(aux->obj);
-
-        if (ast != NULL && s != NULL) {
-            float d = (*ast) + s;
-
-            if (d < ast->getSize() + s->getSize() + 3) {
-                ast->reposition();
-            }
-        }
-
-        aux = aux->next;
+ObjectsList::~ObjectsList() {
+    nodo* actual = head;
+    while (actual != NULL) {
+        nodo* siguiente = actual->next;
+        delete actual->obj;
+        delete actual;
+        actual = siguiente;
     }
 }

@@ -1,5 +1,8 @@
 
+
+
 #include "commonstuff.h"
+
 // forward declaration
 class ObjectList;
 
@@ -21,13 +24,11 @@ class Shape {
 
  public:
   Shape();
-  void move();
+  virtual void move();
   virtual void draw()=0;
   void getPos(float*);
   virtual float getSize()=0;
   int getNo();
-  float getX();
-  float getY();
 };
 
 #endif

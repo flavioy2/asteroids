@@ -2,6 +2,7 @@
 #include "commonstuff.h"
 #include "Shape.h"
 #include "Bullet.h"
+
 #ifndef __SHIP_H__
 #define __SHIP_H__
 
@@ -17,6 +18,7 @@ class Ship: public Shape {
   void hyperjump();
   float getSize();
   void resetpos();
+  void move(); //MÉTODO AÑADIDO PARA QUE LA NAVE FRENE POCO A POCO AL DEJAR DE ACELERAR
 };
 
 #endif

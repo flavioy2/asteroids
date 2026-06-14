@@ -1,4 +1,4 @@
-
+#include<stdlib.h>
 #include "Shape.h"
 
 Shape::Shape()
@@ -69,13 +69,5 @@ void Shape::move()
       if(rot[Z]<0) rot[Z] += 360;
 	
     }
-
+  
 }
-
-float Shape::getX() {
-      return pos[X];
-  }
-
-  float Shape::getY() {
-      return pos[Y];
-  }

@@ -8,10 +8,8 @@
 // (C) 2015 
 //***********************
 
-#ifndef __OBJECTSLIST_H__
-#define __OBJECTSLIST_H__
 
-#define _CRT_SECURE_NO_WARNINGS
+
 #include "commonstuff.h"
 
 #include <stdio.h>
@@ -23,15 +21,14 @@
 #include <unistd.h>
 #endif
 #include <string.h>
-
+#include "glut.h"
 #include "Shape.h"
 #include "Asteroid.h"
 #include "Bullet.h"
 #include "Ship.h"
 #include "ObjectsList.h"
 #include "Flame.h"
-#endif
-
+#include "OVNI.h"
 
 //***********************
 // Prototipos de funciones 
@@ -332,7 +329,6 @@ void OnSpecKeyboardDown(int key, int x, int y)
     case GLUT_KEY_DOWN:
       break;
     case GLUT_KEY_UP:
-        theShip->thrust(SHIPSPEED);
       break;
     case GLUT_KEY_LEFT: theShip->rotate(0,-5,0);
       break;

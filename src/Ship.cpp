@@ -93,3 +93,9 @@ void Ship::resetpos()
   color[G] = 0.4;
   color[B] = 0.3;
 }
+
+void Ship::move() {
+    Shape::move();  // LLAMADA AL MOVE() ORIGINAL
+    tspeed[X] *= 0.999;
+    tspeed[Y] *= 0.999;
+}

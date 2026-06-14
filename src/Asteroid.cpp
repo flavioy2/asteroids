@@ -1,7 +1,7 @@
 
 #include "commonstuff.h"
 #include "Asteroid.h"
-
+#include <stdlib.h>
 
 Asteroid::Asteroid(int t)
 {
@@ -98,10 +98,8 @@ void Asteroid::reposition()
 
 }
 
-float Asteroid::operator+(Shape* s){
-    return mydistance(pos[X], pos[Y], s->getX(), s->getY());
-}
-int Asteroid::getAsteroidSize()
-{
-    return size;
+float Asteroid::operator+(Shape* s) {
+    float spos[3];
+    s->getPos(spos);
+    return mydistance(pos[X], pos[Y], spos[X], spos[Y]);
 }
