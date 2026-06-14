@@ -1,4 +1,3 @@
-
 #include "commonstuff.h"
 #include "Asteroid.h"
 #include <stdlib.h>

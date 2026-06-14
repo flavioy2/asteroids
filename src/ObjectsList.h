@@ -4,7 +4,7 @@
 #include "Asteroid.h"
 #include "Ship.h"
 #include "Bullet.h"
-#include "OVNI.h"
+#include "Ovni.h"
 
 #ifndef __OL_H__
 #define __OL_H__
@@ -20,7 +20,7 @@ class ObjectsList{
   int n;
    nodo *head;
   Ship *theShippa;
-  OVNI* theOvni;
+  Ovni* theOvni;
   int tiempoOVNI;
   
  public:

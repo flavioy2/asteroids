@@ -1,4 +1,3 @@
-
 #include "commonstuff.h"
 #include "Flame.h" 
 

@@ -3,11 +3,11 @@
 #ifndef __OVNI_H__
 #define __OVNI_H__
 
-class OVNI : public Shape {
+class Ovni : public Shape {
 private:
     int size;
 public:
-    OVNI(int t);
+    Ovni(int t);
     void draw();
     void move();
     float getSize();

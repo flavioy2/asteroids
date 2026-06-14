@@ -1,82 +1,77 @@
-
-
-
-
 //***********************
 // Asteroids Open GL
-// Claudio Rossi, Universidad Politécnica de Madrid 
-// (C) 2015 
+// Claudio Rossi, Universidad Politécnica de Madrid
+// (C) 2015
 //***********************
-
-
 
 #include "commonstuff.h"
 
-#include <stdio.h>
+#include <ios>
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #ifdef _WIN32
 #include <windows.h>
 #else
 #include <unistd.h>
 #endif
-#include <string.h>
-#include "glut.h"
-#include "Shape.h"
 #include "Asteroid.h"
 #include "Bullet.h"
-#include "Ship.h"
-#include "ObjectsList.h"
 #include "Flame.h"
-#include "OVNI.h"
+#include "ObjectsList.h"
+#include "Ovni.h"
+#include "Shape.h"
+#include "Ship.h"
+#include "glut.h"
+#include <string.h>
 
 //***********************
-// Prototipos de funciones 
+// Prototipos de funciones
 //***********************
 
 // Callback de la logica del juego
 void myLogic();
 
-//Callback de dibujo
-void OnDibuja(void);	
+// Callback de dibujo
+void OnDibuja(void);
 
-//Callbacks para teclado y raton
+// Callbacks para teclado y raton
 void OnKeyboardDown(unsigned char key, int x, int y);
-void OnMouseBtn(int button, int state,int x, int y);
+void OnMouseBtn(int button, int state, int x, int y);
 void OnMouseMoveBtn(int x, int y);
 void OnSpecKeyboardDown(int key, int x, int y);
-
+void OnSpecKeyboardUp(int key, int x, int y);
 
 void printdata();
 void gameover(int score);
 
-  
 //***********************
 // Variables globales
 //***********************
+bool isLeftPressed = false;
+bool isRightPressed = false;
 
 // Posición y step de la camara
-float cam_pos[6]={0, 0, 27};
+float cam_pos[6] = {0, 0, 27};
 
 // posición de la explosión
-float expl_pos[2]={-1000,-1000};
+float expl_pos[2] = {-1000, -1000};
 
 // Modo del Mouse
-int MODE=NONE;
+int MODE = NONE;
 
 // Objetos globales
 ObjectsList worldobjects;
-Ship *theShip=NULL;
-Bullet *theBullet=NULL;
-Flame *theFlame=NULL;
+Ship *theShip = NULL;
+Bullet *theBullet = NULL;
+Flame *theFlame = NULL;
 
 // Varias constantes usadas en el programa
-int shotTime=0;
-int nShips=3;
-int score=0;
-int FlameTime=0;
-int FT=20;
-
+int shotTime = 0;
+int nShips = 3;
+int score = 0;
+int FlameTime = 0;
+int FT = 20;
 
 //***  VELOCIDAD
 
@@ -84,294 +79,264 @@ int FT=20;
 // Programa principal
 //***********************
 
-
-int main(int argc,char* argv[])
-{
+int main(int argc, char *argv[]) {
 
   // inicializaciones
 
-  //Creacion y definicion de la ventana
+  // Creacion y definicion de la ventana
   glutInit(&argc, argv);
-  glutInitWindowSize(WINX,WINY);
+  glutInitWindowSize(WINX, WINY);
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutCreateWindow("Asteroids GL");
 
-  //Habilita las luces, la renderizacion y el color de los materiales
+  // Habilita las luces, la renderizacion y el color de los materiales
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHTING);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_COLOR_MATERIAL);
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);    
-	
-  //Define la proyeccion
-  glMatrixMode(GL_PROJECTION);
-  gluPerspective( 40.0, WINX/WINY, 0.1, 50);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-  //Para definir el punto de vista
-  glMatrixMode(GL_MODELVIEW);	
+  // Define la proyeccion
+  glMatrixMode(GL_PROJECTION);
+  gluPerspective(40.0, WINX / WINY, 0.1, 50);
+
+  // Para definir el punto de vista
+  glMatrixMode(GL_MODELVIEW);
 
   // Define call backs te GLUT
 
   // Display function: contiene las instrucciones de dibujo
   glutDisplayFunc(OnDibuja);
-    // Idle function: contiene la logica del juego
+  // Idle function: contiene la logica del juego
   glutIdleFunc(myLogic);
-  
+
   // Callbacks de teclado y ratón
   glutKeyboardFunc(OnKeyboardDown);
   glutSpecialFunc(OnSpecKeyboardDown);
+  glutSpecialUpFunc(OnSpecKeyboardUp);
   glutMotionFunc(OnMouseMoveBtn);
   glutMouseFunc(OnMouseBtn);
 
-  
   // Posicciona el punto de vista (cámara)
-  gluLookAt(cam_pos[0],cam_pos[1],cam_pos[2],  // posicion del  ojo  
-	    0.0, 0.0, 0.0,		        // hacia que punto mira  
-	    0.0, 1.0, 0.0);         // vector "UP"  (vertical positivo)
+  gluLookAt(cam_pos[0], cam_pos[1], cam_pos[2], // posicion del  ojo
+            0.0, 0.0, 0.0,                      // hacia que punto mira
+            0.0, 1.0, 0.0); // vector "UP"  (vertical positivo)
 
-
-  
   // Creacción de los objetos iniciales
   theShip = worldobjects.getShip();
 
-  // WORLDOBJECTS es declarada estática, se inicializa "automaticamente" - contiene los asteroides  //***
-  
+  // WORLDOBJECTS es declarada estática, se inicializa "automaticamente" -
+  // contiene los asteroides  //***
+
   // bucle infinito de Open GL
   glutMainLoop();
 
   // Esto solo sirve para que el compilador no proteste, nunca se llegará aquí
-  return 0;   
-
+  return 0;
 }
 
 /************************** FIN DEL MAIN ************************************/
-
-
-
-
 
 //***********************
 // Callbacks
 //***********************
 
-
 // Imprime puntuacción y num. de naves
-void printdata()
-{
-  int i,l;
+void printdata() {
+  int i, l;
   char buffer[50];
-  
+
   glPushMatrix();
 
-  sprintf(buffer,"Ships: %d       Score: %d",nShips,score);
-  l=strlen(buffer); 
+  sprintf(buffer, "Ships: %d       Score: %d", nShips, score);
+  l = strlen(buffer);
 
   glDisable(GL_LIGHTING);
   glColor3f(1.0f, 1.0f, 1.0f);
-  glRasterPos3f(-9, 9,-0.1);
-  for( i=0; i < l; i++) 
-    {
-      glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, buffer[i]); // Print a character on the screen
-    }
+  glRasterPos3f(-9, 9, -0.1);
+  for (i = 0; i < l; i++) {
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,
+                        buffer[i]); // Print a character on the screen
+  }
   glEnable(GL_LIGHTING);
 
   glPopMatrix();
-
 }
 
-
-//no usada
-void gameover(int score)
-{
-  int i,l;
+// no usada
+void gameover(int score) {
+  int i, l;
   char buffer[30];
-  
+
   glPushMatrix();
 
-    sprintf(buffer,"GAME OVER! Points: %d",score);
+  sprintf(buffer, "GAME OVER! Points: %d", score);
 
-  l=strlen(buffer); 
+  l = strlen(buffer);
 
   glDisable(GL_LIGHTING);
   glColor3f(1.0f, 1.0f, 1.0f);
-  glRasterPos3f(-9, 9,-0.1);
-  for( i=0; i < l; i++) 
-    {
-      glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, buffer[i]); // Print a character on the screen
-    }
+  glRasterPos3f(-9, 9, -0.1);
+  for (i = 0; i < l; i++) {
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,
+                        buffer[i]); // Print a character on the screen
+  }
   glEnable(GL_LIGHTING);
 
   glPopMatrix();
-
 }
-
 
 // Logica del juego: mueve los objeto mandando el mensaje "move"
-void myLogic()
-{
+void myLogic() {
   int res;
 
+  if(isLeftPressed)
+      theShip->rotate(0, -2, 0);
+  if(isRightPressed)
+      theShip->rotate(0, 2, 0);
+
   // borra el proyectil después de cierto tiempo si no ha dado con nada
-  if(shotTime++>MAXSHOTTIME)
-    {
-      worldobjects.remove(theBullet);    // si theBullet==NULL no pasa nada, la remove no lo encuentra y no hace nada
-      theBullet = NULL;
-      shotTime = 0;
-    }
+  if (shotTime++ > MAXSHOTTIME) {
+    worldobjects.remove(theBullet); // si theBullet==NULL no pasa nada, la
+                                    // remove no lo encuentra y no hace nada
+    theBullet = NULL;
+    shotTime = 0;
+  }
 
   // Pide al mudo que mueve los objetos
   worldobjects.move();
 
-  // Pide si ha habido colisión, pasa referencia a proyectil y nave, retorna tipo de colisión y posición de la colisión
-  // res==0:  No ha colisicón
-  // res==1:  Asteroide/Nave
-  // res>=2:  Asteroide/Proyectil, depende del tipo de asteroide (grande/mediano/pequeño)
-  res = worldobjects.collisions(theBullet,theShip,expl_pos);    //***  //***
+  // Pide si ha habido colisión, pasa referencia a proyectil y nave, retorna
+  // tipo de colisión y posición de la colisión res==0:  No ha colisicón res==1:
+  // Asteroide/Nave res>=2:  Asteroide/Proyectil, depende del tipo de asteroide
+  // (grande/mediano/pequeño)
+  res = worldobjects.collisions(theBullet, theShip, expl_pos); //***  //***
 
   // Explosion
-  if(res>0 || FlameTime>0)
-    {
-      FlameTime++;
-      if(!theFlame)
-	{
-	  theFlame = new Flame(expl_pos);
-	  worldobjects.add(theFlame);
-	}
-      else
-	if(FlameTime>FT)
-	  {
-	    worldobjects.remove(theFlame);
-	    theFlame=NULL;
-	    FlameTime = 0;
-	  }
+  if (res > 0 || FlameTime > 0) {
+    FlameTime++;
+    if (!theFlame) {
+      theFlame = new Flame(expl_pos);
+      worldobjects.add(theFlame);
+    } else if (FlameTime > FT) {
+      worldobjects.remove(theFlame);
+      theFlame = NULL;
+      FlameTime = 0;
     }
-  
-  if(res==1)    
-    {
-      nShips--;
+  }
 
-      // Esto habría que mejorarlo...  //***
-      if(nShips==0)
-	exit(1);
-      
-      theShip->resetpos();
-      worldobjects.reposition(theShip);
-    }
+  if (res == 1) {
+    nShips--;
 
-  if(res>=2)    
-    {
-      worldobjects.remove(theBullet);     //***
-      theBullet = NULL;
-      shotTime = 0;
-      score += 100*(res-1);
-    }
+    // Esto habría que mejorarlo...  //***
+    if (nShips == 0)
+      exit(1);
 
+    theShip->resetpos();
+    worldobjects.reposition(theShip);
+  }
 
-
+  if (res >= 2) {
+    worldobjects.remove(theBullet); //***
+    theBullet = NULL;
+    shotTime = 0;
+    score += 100 * (res - 1);
+  }
 }
- 
-/**************************************************************/ 
 
-void OnDibuja(void)
-{ 
-  //Borrado de la pantalla	
+/**************************************************************/
+
+void OnDibuja(void) {
+  // Borrado de la pantalla
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // Manda el mensaje "draw" al mundo
-  worldobjects.draw();    
+  worldobjects.draw();
 
   // imprime datos
   printdata();
- 
-  //Al final, cambiar el buffer
+
+  // Al final, cambiar el buffer
   glutSwapBuffers();
-  glutPostRedisplay();//se le indica que redibuje la pantalla
-  /**************************************************************/}
+  glutPostRedisplay(); // se le indica que redibuje la pantalla
+/**************************************************************/ }
 
-
-
-   
-
-
-void OnKeyboardDown(unsigned char key, int x, int y)
-{ 
+void OnKeyboardDown(unsigned char key, int x, int y) {
   int mod;
 
-  mod=glutGetModifiers();
+  mod = glutGetModifiers();
 
-  switch(key)
-    {
-    case 'q':
-    case ESC:
-      exit(1);
-    case ' ':
-      // Si no hay proyectil, lo crea  //***
-      if(!theBullet)
-	{
-	  theBullet=theShip->fire(); 
-	  worldobjects.add(theBullet);
-	}
-      
-      break;
-    case '-': theShip->thrust(SHIPSPEED); break;  // accelara
-    case ',': theShip->hyperjump(); break;  // hyper jump (mueve la nave a una posición random)
+  switch (key) {
+  case 'q':
+  case ESC:
+    exit(1);
+  case ' ':
+    // Si no hay proyectil, lo crea  //***
+    if (!theBullet) {
+      theBullet = theShip->fire();
+      worldobjects.add(theBullet);
+    }
 
-    }		
-
+    break;
+  case '-':
+    theShip->thrust(SHIPSPEED);
+    break; // accelara
+  case ',':
+    theShip->hyperjump();
+    break; // hyper jump (mueve la nave a una posición random)
+  }
 }
 
+void OnSpecKeyboardDown(int key, int x, int y) {
+  switch (key) {
 
-void OnSpecKeyboardDown(int key, int x, int y)
-{ 
-  switch(key)
-    {
+  case GLUT_KEY_DOWN:
+    break;
+  case GLUT_KEY_UP:
+    break;
+  case GLUT_KEY_LEFT:
+    isLeftPressed = true;
+    break;
+  case GLUT_KEY_RIGHT:
+    isRightPressed = true;
+    break;
+  case GLUT_KEY_PAGE_DOWN:
+    break;
+  case GLUT_KEY_PAGE_UP:
+    break;
+  }
+}
 
-    case GLUT_KEY_DOWN:
-      break;
-    case GLUT_KEY_UP:
-      break;
-    case GLUT_KEY_LEFT: theShip->rotate(0,-5,0);
-      break;
-    case GLUT_KEY_RIGHT: theShip->rotate(0,5,0);
-      break;
-    case GLUT_KEY_PAGE_DOWN:
-      break;
-    case GLUT_KEY_PAGE_UP:
-      break;
-    }		
-
+void OnSpecKeyboardUp(int key, int x, int y) {
+  switch (key) {
+  case GLUT_KEY_LEFT:
+    isLeftPressed = false;
+    break;
+  case GLUT_KEY_RIGHT:
+    isRightPressed = false;
+    break;
+  }
 }
 
 // No usada
-void OnMouseBtn(int button, int state,int x, int y)
-{
-  if(state==GLUT_DOWN)
-    if(button==GLUT_LEFT_BUTTON)
-      MODE=TRANS;
+void OnMouseBtn(int button, int state, int x, int y) {
+  if (state == GLUT_DOWN)
+    if (button == GLUT_LEFT_BUTTON)
+      MODE = TRANS;
+    else if (button == GLUT_RIGHT_BUTTON)
+      MODE = ROT;
     else
-      if(button==GLUT_RIGHT_BUTTON)
-        MODE=ROT;
-      else
-        MODE=NONE;
-    printf("MOUSE!\n");
+      MODE = NONE;
+  printf("MOUSE!\n");
 }
 
- 
 // No usada
-void  OnMouseMoveBtn  (int x, int y)
-{
+void OnMouseMoveBtn(int x, int y) {
 
   //  printf("MOUSE MOVES!\n");
-    
-  if(MODE==TRANS)
-    {
-     
-    }
-  else
-    {
-     
-    }
 
- 
- 
+  if (MODE == TRANS) {
+
+  } else {
+  }
 }

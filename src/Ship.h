@@ -1,4 +1,3 @@
-
 #include "commonstuff.h"
 #include "Shape.h"
 #include "Bullet.h"

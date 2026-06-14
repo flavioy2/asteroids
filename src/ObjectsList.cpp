@@ -47,7 +47,7 @@ void ObjectsList::remove(Shape* s) {
 void ObjectsList::move() {
     tiempoOVNI++;
     if (tiempoOVNI > 1500 && theOvni == NULL) {
-        theOvni = new OVNI(1);
+        theOvni = new Ovni(1);
         add(theOvni);
         tiempoOVNI = 0;
     }
@@ -123,7 +123,7 @@ int ObjectsList::collisions(Bullet* bullet, Ship* ship, float* expl_pos) {
                 }
             }
         }
-        OVNI* ovni = dynamic_cast<OVNI*>(actual->obj);
+        Ovni* ovni = dynamic_cast<Ovni*>(actual->obj);
         if (ovni != NULL && bullet != NULL) {
             if ((*ovni + bullet) < ovni->getSize() + bullet->getSize()) {
                 remove(bullet);

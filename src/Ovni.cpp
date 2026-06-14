@@ -1,7 +1,7 @@
 #include "commonstuff.h"
-#include "OVNI.h"
+#include "Ovni.h"
 
-OVNI::OVNI(int t)
+Ovni::Ovni(int t)
 {
     size = RAND_DOM(1, 3);
     pos[X] = -SIZEX2;
@@ -22,13 +22,13 @@ OVNI::OVNI(int t)
     temporizador = 0;
 }
 
-void OVNI::draw() {
+void Ovni::draw() {
     predraw();
     glutSolidTorus(size * 0.1, size * 0.3, 9, 8);
     postdraw();
 }
 
-void OVNI::move() {
+void Ovni::move() {
     temporizador++;
     pos[X] += tspeed[X];
 
@@ -51,11 +51,11 @@ void OVNI::move() {
     }
 }
 
-float OVNI::getSize() {
+float Ovni::getSize() {
     return (size * 0.3);
 }
 
-float OVNI::operator+(Shape* s) {
+float Ovni::operator+(Shape* s) {
     float p[3];
     s->getPos(p);
     return mydistance(pos[X], pos[Y], p[X], p[Y]);

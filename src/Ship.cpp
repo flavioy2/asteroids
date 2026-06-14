@@ -1,4 +1,3 @@
-
 #include "commonstuff.h"
 #include "Ship.h"
 #include "Bullet.h"
