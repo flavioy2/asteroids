@@ -16,6 +16,7 @@ add_executable(AsteroidsGL
     src/ObjectsList.cpp
     src/Shape.cpp
     src/Ship.cpp
+    src/Ovni.cpp
 )
 
 target_include_directories(AsteroidsGL PRIVATE
