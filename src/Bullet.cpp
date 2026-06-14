@@ -1,8 +1,7 @@
-#include "commonstuff.h"
 #include "Bullet.h"
+#include "commonstuff.h"
 
-Bullet::Bullet(float px, float py, float vx, float vy)
-{
+Bullet::Bullet(float px, float py, float vx, float vy) {
   pos[X] = px;
   pos[Y] = py;
   pos[Z] = 0;
@@ -24,15 +23,10 @@ Bullet::Bullet(float px, float py, float vx, float vy)
   color[B] = 0.9;
 }
 
-void Bullet::draw()
-{
+void Bullet::draw() {
   predraw();
-  glutSolidSphere(0.1,5,5);	
+  glutSolidSphere(0.1, 5, 5);
   postdraw();
 }
 
-
-float Bullet::getSize()
-{
-  return (0.1);
-}
+float Bullet::getSize() { return (0.1); }
