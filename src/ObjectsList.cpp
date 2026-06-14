@@ -47,7 +47,7 @@ void ObjectsList::remove(Shape *shape) {
 
 void ObjectsList::move() {
   tiempoOVNI++;
-  if (tiempoOVNI > 1500 && theOvni == NULL) {
+  if (tiempoOVNI > 1500 && theOvni == NULL) { // APARECE UN OVNI PERIODICAMENTE
     theOvni = new Ovni(1);
     add(theOvni);
     tiempoOVNI = 0;
@@ -73,28 +73,28 @@ Ship *ObjectsList::getShip() { return theShippa; }
 void ObjectsList::reposition(Ship *ship) {
   Nodo *actual = head;
   while (actual != NULL) {
-    Asteroid *asteroid = dynamic_cast<Asteroid *>(actual->obj);
+    Asteroid *asteroid = dynamic_cast<Asteroid *>(actual->obj); // COMPROBAMOS SI EL OBJETO ES UN ASTEROIDE
     if (asteroid != NULL) {
       float apos[3];
       asteroid->getPos(apos);
-      if (mydistance(apos[X], apos[Y], 0, 0) < 2 * asteroid->getSize())
+      if (mydistance(apos[X], apos[Y], 0, 0) < 2 * asteroid->getSize()) // SI EL ASTEROIDE ESTA CERCA DEL CENTRO DE LA PANTALLA SE REPOSICIONA
         asteroid->reposition();
     }
     actual = actual->next;
   }
   theShippa = ship;
-  add(theShippa);
+  add(theShippa); // INSERTAMOS LA NAVE
 }
 
 int ObjectsList::collisions(Bullet *bullet, Ship *ship, float *expl_pos) {
   Nodo *actual = head;
   while (actual != NULL) {
-    Asteroid *asteroid = dynamic_cast<Asteroid *>(actual->obj);
+    Asteroid *asteroid = dynamic_cast<Asteroid *>(actual->obj); // COMPROBAMOS SI EL OBJETO ES UN ASTEROIDE
     if (asteroid != NULL) {
       if (ship != NULL) {
         float spos[3];
         ship->getPos(spos);
-        if ((*asteroid + ship) < asteroid->getSize() + ship->getSize()) {
+        if ((*asteroid + ship) < asteroid->getSize() + ship->getSize()) { // COLISION ENTRE ASTEROIDE Y NAVE
           expl_pos[X] = spos[X];
           expl_pos[Y] = spos[Y];
           remove(ship);
@@ -105,7 +105,7 @@ int ObjectsList::collisions(Bullet *bullet, Ship *ship, float *expl_pos) {
       if (bullet != NULL) {
         float apos[3];
         asteroid->getPos(apos);
-        if ((*asteroid + bullet) < asteroid->getSize() + bullet->getSize()) {
+        if ((*asteroid + bullet) < asteroid->getSize() + bullet->getSize()) { // COLISION ENTRE ASTEROIDE Y BALA
           expl_pos[X] = apos[X];
           expl_pos[Y] = apos[Y];
           remove(bullet);
@@ -123,18 +123,18 @@ int ObjectsList::collisions(Bullet *bullet, Ship *ship, float *expl_pos) {
         }
       }
     }
-    Ovni *ovni = dynamic_cast<Ovni *>(actual->obj);
+    Ovni *ovni = dynamic_cast<Ovni *>(actual->obj); // IGUAL QUE ANTES, COMPROBAMOS SI EL OBJETO ES UN OVNI
     if (ovni != NULL && bullet != NULL) {
-      if ((*ovni + bullet) < ovni->getSize() + bullet->getSize()) {
+      if ((*ovni + bullet) < ovni->getSize() + bullet->getSize()) { // COLISION ENTRE OVNI Y BALA
         remove(bullet);
         remove(ovni);
         theOvni = NULL;
-        tiempoOVNI = 0; // <-- aqui
+        tiempoOVNI = 0; 
         if (ovni->getSize() == BIG * 0.3)
-          return 7;
+          return 5;
         if (ovni->getSize() == MEDIUM * 0.3)
           return 6;
-        return 5;
+        return 7;
       }
     }
     actual = actual->next;
@@ -142,6 +142,7 @@ int ObjectsList::collisions(Bullet *bullet, Ship *ship, float *expl_pos) {
   return 0;
 }
 
+// DESTRUIMOS LA LISTA Y LIBERAMOS LA MEMORIA
 ObjectsList::~ObjectsList() {
   Nodo *actual = head;
   while (actual != NULL) {
